@@ -1,7 +1,17 @@
 name: Deploy OpenAPI to API Center
-
+run-name: Deploy-${{ github.event.inputs.resourceGroupName }}-${{ github.event.inputs.serviceName }}
 on:
   workflow_dispatch:
+    inputs:
+      openAPIFile:
+        description: 'OpenAPI file'
+        required: true
+      resourceGroupName:
+        description: 'Azure Resource group name'
+        required: true
+      serviceName:
+        description: 'Azure resource name'
+        required: true
 permissions:
       id-token: write
       contents: read
@@ -19,10 +29,10 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
-  
-      - name: Azure CLI script
+
+      - name: Deploy to API Center
         uses: azure/CLI@v1
         with:
           azcliversion: latest
           inlineScript: |
-            az account show
+            az apic api register -g ${{ github.event.inputs.resourceGroupName }} -s ${{ github.event.inputs.serviceName }} --api-location ${{ github.event.inputs.openAPIFile }}
