@@ -20,8 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+
       - name: Azure login
         uses: azure/login@v1
         with:
