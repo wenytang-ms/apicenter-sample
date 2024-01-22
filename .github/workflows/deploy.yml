@@ -35,4 +35,4 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
-            az apic api register -g ${{ github.event.inputs.resourceGroupName }} -s ${{ github.event.inputs.serviceName }} --api-location "${{ github.event.inputs.openAPIFile }}"
+            az apic api register -g ${{ github.event.inputs.resourceGroupName }} -s $SERVICE_NAME --api-location "${{ github.event.inputs.openAPIFile }}"
