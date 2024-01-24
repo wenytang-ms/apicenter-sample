@@ -1,17 +1,6 @@
 name: Deploy OpenAPI to API Center
-run-name: Deploy-${{ github.event.inputs.resourceGroupName }}-${{ github.event.inputs.serviceName }}
 on:
   workflow_dispatch:
-    inputs:
-      openAPIFile:
-        description: 'OpenAPI file'
-        required: true
-      resourceGroupName:
-        description: 'Azure Resource group name'
-        required: true
-      serviceName:
-        description: 'Azure resource name'
-        required: true
 permissions:
       id-token: write
       contents: read
@@ -22,6 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      # https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-azure
+      # https://github.com/Azure/login?tab=readme-ov-file#login-with-openid-connect-oidc-recommended
       - name: Azure login
         uses: azure/login@v1
         with:
@@ -35,4 +26,4 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
-            az apic api register -g ${{ github.event.inputs.resourceGroupName }} -s ${{ vars.SERVICE_NAME }} --api-location "${{ github.event.inputs.openAPIFile }}"
+            az apic api register -g ${{ vars.RESOURCE_GROUP_VAR }} -s ${{ vars.SERVICE_NAME_VAR }} --api-location "${{vars.FILE_LOCATION_VAR }}"
