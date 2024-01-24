@@ -26,4 +26,4 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
-            az apic api register -g ${{ vars.RESOURCE_GROUP_VAR }} -s ${{ vars.SERVICE_NAME_VAR }} --api-location "${{vars.FILE_LOCATION_VAR }}"
+            az apic api register -g ${{ vars.RESOURCE_GROUP }} -s ${{ vars.SERVICE_NAME }} --api-location "${{vars.FILE_LOCATION }}"
