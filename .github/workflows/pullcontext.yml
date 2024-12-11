@@ -5,7 +5,14 @@ on: push
 jobs:
   dump_contexts_to_log:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: read
     steps:
-      - name: Dump GitHub context
-        run: |
-          echo context.payload
+      - name: Create Issue
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }} # Use a PAT with the required permissions
+          script: |
+            console.log(JSON.stringify(context, null, 2));
