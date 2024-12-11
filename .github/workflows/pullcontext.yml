@@ -1,35 +1,33 @@
 name: Get PR Details from Push Event
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+      - closed
 
 jobs:
   get-pr-details:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && !contains(github.event.pull_request.labels.*.name, 'cherry-pick-hotfix') }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Extract PR details
-        id: extract-pr-details
-        run: |
-          CURRENT_BRANCH=${{ github.ref }}
-          PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
-          PR_TITLE=$(jq --raw-output .pull_request.title "$GITHUB_EVENT_PATH")
-          PR_COMMITTER=$(jq --raw-output .head_commit.committer.name "$GITHUB_EVENT_PATH")
-          echo "GITHUB_REF=$CURRENT_BRANCH" >> $GITHUB_ENV
-          echo "PR number: $PR_NUMBER"
-          echo "PR title: $PR_TITLE"
-          echo "PR committer: $PR_COMMITTER"
-          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
-          echo "PR_TITLE=$PR_TITLE" >> $GITHUB_ENV
-          echo "PR_COMMITTER=$PR_COMMITTER" >> $GITHUB_ENV
-
-      - name: Use PR details
-        run: |
-          echo "The Current Branch is ${{ env.GITHUB_REF }}"
-          echo "The Pull Request number is ${{ env.PR_NUMBER }}"
-          echo "The Pull Request title is ${{ env.PR_TITLE }}"
-          echo "The Pull Request committer is ${{ env.PR_COMMITTER }}"
+      - name: Create Issue
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }} # Use a PAT with the required permissions
+          script: |
+            const currentTarget = context.payload.pull_request.base.ref;
+            const latestVSCRelease = '${{ steps.get-latest-release.outputs.latest_vsc_release }}';
+            const latestVSRelease = '${{ steps.get-latest-release.outputs.latest_vs_release }}';
+            const prNumber = context.payload.pull_request.number;
+            const prTitle = context.payload.pull_request.title;
+            const prAuthor = context.payload.pull_request.user.login;
+            console.log(`PR Number: ${prNumber}`);
+            console.log(`PR Title: ${prTitle}`);
+            console.log(`PR Author: ${prAuthor}`);
+            console.log(`Current Target: ${currentTarget}`);
