@@ -1,18 +1,35 @@
-name: Context testing
+name: Get PR Details from Push Event
 
-on: push
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  dump_contexts_to_log:
+  get-pr-details:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      issues: write
-      pull-requests: read
     steps:
-      - name: Create Issue
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }} # Use a PAT with the required permissions
-          script: |
-            console.log(JSON.stringify(context, null, 2));
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Extract PR details
+        id: extract-pr-details
+        run: |
+          CURRENT_BRANCH=${{ github.ref }}
+          PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          PR_TITLE=$(jq --raw-output .pull_request.title "$GITHUB_EVENT_PATH")
+          PR_COMMITTER=$(jq --raw-output .head_commit.committer.name "$GITHUB_EVENT_PATH")
+          echo "GITHUB_REF=$CURRENT_BRANCH" >> $GITHUB_ENV
+          echo "PR number: $PR_NUMBER"
+          echo "PR title: $PR_TITLE"
+          echo "PR committer: $PR_COMMITTER"
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+          echo "PR_TITLE=$PR_TITLE" >> $GITHUB_ENV
+          echo "PR_COMMITTER=$PR_COMMITTER" >> $GITHUB_ENV
+
+      - name: Use PR details
+        run: |
+          echo "The Current Branch is ${{ env.GITHUB_REF }}"
+          echo "The Pull Request number is ${{ env.PR_NUMBER }}"
+          echo "The Pull Request title is ${{ env.PR_TITLE }}"
+          echo "The Pull Request committer is ${{ env.PR_COMMITTER }}"
