@@ -35,17 +35,17 @@ jobs:
               head=$(git merge-base ${{ github.event.inputs.target-branch }} ${{ github.event.inputs.source-branch }})
               echo "======== step 1 ==============" $HEAD
               temp_file="tmp_$$.md"
-              echo "======== step 2 ==============" $temp_file
+              echo "======== step 2 ==============" "$temp_file"
               history_feat=$(git log --pretty=format:"%s %h" $head...HEAD | grep "^feat")
               echo "-------- step 2.5 --------------" $history_feat
-              echo -e '\nFx-core feat commits:\n' "$history_feat" '\n\n'> $temp_file
+              echo -e '\nFx-core feat commits:\n' "$history_feat" '\n\n'> "$temp_file"
               echo "======== step 3 =============="
               history_fix=$(git log --pretty=format:"%s %h" $head...HEAD | grep "^fix")
               echo -e "-------- step 3.5 --------------" $history_fix
-              echo -e '\nFx-core fix commits:\n' "$history_fix" '\n\n'>> $temp_file
+              echo -e '\nFx-core fix commits:\n' "$history_fix" '\n\n'>> "$temp_file"
               echo "======== step 4 =============="
-              cat PRERELEASE.md >> $temp_file
-              mv $temp_file PRERELEASE.md
+              cat PRERELEASE.md >> "$temp_file"
+              mv "$temp_file" PRERELEASE.md
               echo "======== step 5 =============="
               git checkout -b changelog/${{ github.event.inputs.target-branch }}
           
