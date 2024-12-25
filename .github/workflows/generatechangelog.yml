@@ -32,7 +32,7 @@ jobs:
     
           - name: update changelog
             run: |
-              HEAD=$(git merge-base ${{ github.event.inputs.target-branch }} ${{ github.event.inputs.source-branch }})
+              head=$(git merge-base ${{ github.event.inputs.target-branch }} ${{ github.event.inputs.source-branch }})
               echo "======== step 1 ==============" $HEAD
               temp_file="tmp_$$.md"
               echo "======== step 2 ==============" $temp_file
