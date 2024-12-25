@@ -67,8 +67,8 @@ jobs:
             with:
               script: |
                 const { data: pullRequest } = await github.pulls.create({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
+                  owner: wenytang-ms,
+                  repo: apicenter-sample,
                   title: 'docs: changelog for release',
                   head: 'changelog/${{ github.event.inputs.target-branch }}',
                   base: '${{ github.event.inputs.target-branch }}',
