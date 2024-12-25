@@ -23,6 +23,12 @@ jobs:
               fetch-depth: 0
               token: ${{ secrets.GITHUB_TOKEN }}
               ref: ${{ github.event.inputs.target-branch }}
+
+          - name: checkout branch
+            run: |
+              git checkout ${{ github.event.inputs.source-branch }}
+              git pull origin ${{ github.event.inputs.source-branch }}
+              git checkout ${{ github.event.inputs.target-branch }}
     
           - name: update changelog
             run: |
