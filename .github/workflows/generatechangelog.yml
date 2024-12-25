@@ -26,7 +26,7 @@ jobs:
     
           - name: update changelog
             run: |
-              HEAD=$(git merge-base ${{ github.event.inputs.target-branch }} ${{ github.event.inputs.source-branch }})
+              HEAD=$(git merge-base ${{ github.event.inputs.target-branch }} origin/${{ github.event.inputs.source-branch }})
               tempfile=$(mktemp)
               history_feat=$(git log --pretty=format:"%s %h" $head...HEAD | grep "^feat")
               echo -e '\nFx-core feat commits:\n' "$history_feat" '\n\n'> "$tempfile"
@@ -34,7 +34,7 @@ jobs:
               echo -e '\nFx-core fix commits:\n' "$history_fix" '\n\n'>> "$tempfile"
               cat PRERELEASE.md >> "$tempfile"
               mv "$tempfile" PRERELEASE.md
-              git checkout -b changelog/${{ github.event.inputs.source-branch }}
+              git checkout -b changelog/${{ github.event.inputs.target-branch }}
           
           - name: setup user info
             run: |
@@ -43,7 +43,7 @@ jobs:
               git config --global user.name $(echo $user_info | jq -r '.name')
               git add PRERELEASE.md
               git commit -m "dosc: update changelog for release"
-              git push origin changelog/${{ github.event.inputs.source-branch }}
+              git push origin changelog/${{ github.event.inputs.target-branch }}
             
           - name: Create Pull Request
             uses: actions/github-script@v6
@@ -53,8 +53,8 @@ jobs:
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   title: 'docs: changelog for release',
-                  head: 'changelog/${{ github.event.inputs.source-branch }}',
-                  base: '${{ github.event.inputs.source-branch }}',
+                  head: 'changelog/${{ github.event.inputs.target-branch }}',
+                  base: '${{ github.event.inputs.target-branch }}',
                   body: 'Changelog update'
                 })
                 core.setOutput('pull-request-url', pullRequest.html_url)
