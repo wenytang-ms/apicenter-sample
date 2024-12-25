@@ -72,5 +72,5 @@ jobs:
                 base: ${{ github.event.inputs.target-branch }}
                 add-paths: 'PRERELEASE.md'
                 commit-message: 'docs: update changelog for release'
-                author: '${{ env.user_name }}'
-                committer: '${{ env.user_email }}'
+                author: '${{ env.user_name }} <${{ env.user_email }}>'
+                committer: '${{ env.user_name }} <${{ env.user_email }}>'
