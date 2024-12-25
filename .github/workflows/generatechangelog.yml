@@ -58,9 +58,10 @@ jobs:
                 echo "Fetching user info for $GITHUB_ACTOR"
                 user_info=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/users/$GITHUB_ACTOR)
                 echo "User info: $user_info"
-                echo "::set-output name=user_info::$user_info"
+                echo "::set-output name=user_info::$user_info" 
+                echo "email " ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com
                 echo "user_name=$(echo $user_info | jq -r '.name')" >> $GITHUB_ENV
-                echo "user_email=$(echo $user_info | jq -r '.email')" >> $GITHUB_ENV
+                echo "user_email=$(${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com)" >> $GITHUB_ENV
 
           - uses: peter-evans/create-pull-request@v4
             with:
