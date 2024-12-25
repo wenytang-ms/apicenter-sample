@@ -50,17 +50,20 @@ jobs:
               echo "======== step 4 =============="
               cat PRERELEASE.md >> "$temp_file"
               mv "$temp_file" PRERELEASE.md
-              echo "======== step 5 =============="
+              echo "======== step 5 ==============" $(cat PRERELEASE.md)
               git checkout -b changelog/${{ github.event.inputs.target-branch }}
           
           - name: setup user info
             run: |
+              echo "======== step 6 ==============" $(cat PRERELEASE.md)
               user_info=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/users/$GITHUB_ACTOR)
               git config --global user.email $(echo $user_info | jq -r '.name')
               git config --global user.name $(echo $user_info | jq -r '.name')
               git add PRERELEASE.md
               git commit -m "dosc: update changelog for release"
+              echo "===========" $(git diff --name-only)
               git push origin changelog/${{ github.event.inputs.target-branch }}
+              echo $(git log -1)
 
           - uses: peter-evans/create-pull-request@v4
             with:
