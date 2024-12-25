@@ -57,6 +57,8 @@ jobs:
             run: |
                 echo "Fetching user info for $GITHUB_ACTOR"
                 user_info=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/users/$GITHUB_ACTOR)
+                echo "User info: $user_info"
+                echo "::set-output name=user_info::$user_info"
                 echo "user_name=$(echo $user_info | jq -r '.name')" >> $GITHUB_ENV
                 echo "user_email=$(echo $user_info | jq -r '.email')" >> $GITHUB_ENV
 
