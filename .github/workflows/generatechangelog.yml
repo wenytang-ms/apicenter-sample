@@ -33,6 +33,7 @@ jobs:
               git checkout ${{ github.event.inputs.source-branch }}
               git pull origin ${{ github.event.inputs.source-branch }}
               git checkout ${{ github.event.inputs.target-branch }}
+              git checkout -b changelog/${{ github.event.inputs.target-branch }}
     
           - name: update changelog
             run: |
@@ -51,7 +52,6 @@ jobs:
               cat PRERELEASE.md >> "$temp_file"
               mv "$temp_file" PRERELEASE.md
               echo "======== step 5 ==============" $(cat PRERELEASE.md)
-              git checkout -b changelog/${{ github.event.inputs.target-branch }}
           
           - name: setup user info
             run: |
@@ -61,13 +61,13 @@ jobs:
               git config --global user.name $(echo $user_info | jq -r '.name')
               git add PRERELEASE.md
               git commit -m "dosc: update changelog for release"
-              echo "===========" $(git diff --name-only)
+              echo "===========" $(git log -1)
               git push origin changelog/${{ github.event.inputs.target-branch }}
               echo $(git log -1)
 
-          - uses: peter-evans/create-pull-request@v4
-            with:
-                token: ${{ secrets.GITHUB_TOKEN }}
-                branch: 'changelog/${{ github.event.inputs.target-branch }}'
-                title: 'docs: changelog for release'
-                base: ${{ github.event.inputs.target-branch }}
+        #   - uses: peter-evans/create-pull-request@v4
+        #     with:
+        #         token: ${{ secrets.GITHUB_TOKEN }}
+        #         branch: 'changelog/${{ github.event.inputs.target-branch }}'
+        #         title: 'docs: changelog for release'
+        #         base: ${{ github.event.inputs.target-branch }}
