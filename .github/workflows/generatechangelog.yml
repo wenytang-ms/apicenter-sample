@@ -33,13 +33,18 @@ jobs:
           - name: update changelog
             run: |
               HEAD=$(git merge-base ${{ github.event.inputs.target-branch }} ${{ github.event.inputs.source-branch }})
+              echo "======== step 1 =============="
               tempfile=$(mktemp)
+              echo "======== step 2 =============="
               history_feat=$(git log --pretty=format:"%s %h" $head...HEAD | grep "^feat")
               echo -e '\nFx-core feat commits:\n' "$history_feat" '\n\n'> "$tempfile"
+              echo "======== step 3 =============="
               history_fix=$(git log --pretty=format:"%s %h" $head...HEAD | grep "^fix")
               echo -e '\nFx-core fix commits:\n' "$history_fix" '\n\n'>> "$tempfile"
+              echo "======== step 4 =============="
               cat PRERELEASE.md >> "$tempfile"
               mv "$tempfile" PRERELEASE.md
+              echo "======== step 5 =============="
               git checkout -b changelog/${{ github.event.inputs.target-branch }}
           
           - name: setup user info
