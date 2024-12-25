@@ -26,7 +26,7 @@ jobs:
     
           - name: update changelog
             run: |
-              HEAD=$(git merge-base ${{ github.event.inputs.target-branch }} origin/${{ github.event.inputs.source-branch }})
+              HEAD=$(git merge-base ${{ github.event.inputs.target-branch }} ${{ github.event.inputs.source-branch }})
               tempfile=$(mktemp)
               history_feat=$(git log --pretty=format:"%s %h" $head...HEAD | grep "^feat")
               echo -e '\nFx-core feat commits:\n' "$history_feat" '\n\n'> "$tempfile"
