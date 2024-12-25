@@ -67,3 +67,4 @@ jobs:
                 token: ${{ secrets.GITHUB_TOKEN }}
                 branch: 'changelog/${{ github.event.inputs.target-branch }}'
                 title: 'docs: changelog for release'
+                base: ${{ github.event.inputs.target-branch }}
