@@ -1,0 +1,62 @@
+name: "generate changelog"
+
+on:
+  workflow_dispatch:
+    inputs:
+        target-branch:
+          description: "The target branch of the PR"
+          required: true
+          default: "origin/dev"
+        source-branch:
+          description: "The source branch of the PR"
+          required: true
+          default: "origin/dev"
+
+jobs:
+    generate-changelog:
+        runs-on: ubuntu-latest
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v3
+            with:
+              fetch-depth: 0
+              token: ${{ secrets.GITHUB_TOKEN }}
+              ref: ${{ github.event.inputs.target-branch }}
+    
+          - name: update changelog
+            working-directory: ./packages/vscode-extension/PRERELEASE.md
+            run: |
+              HEAD=git merge-base ${{ github.event.inputs.target-branch }} ${{ github.event.inputs.source-branch }}
+              tempfile=$(mktemp)
+              history_feat=$(git log --pretty=format:"%s %h" $head...HEAD | grep "^feat")
+              echo -e '\nFx-core feat commits:\n' "$history_feat" '\n\n'> "$tempfile"
+              history_fix=$(git log --pretty=format:"%s %h" $head...HEAD | grep "^fix")
+              echo -e '\nFx-core fix commits:\n' "$history_fix" '\n\n'>> "$tempfile"
+              cat PRERELEASE.md >> "$tempfile"
+              mv "$tempfile" PRERELEASE.md
+              git checkout -b changelog/${{ github.event.inputs.source-branch }}
+          
+          - name: setup user info
+            working-directory: ./packages/vscode-extension
+            run: |
+              user_info=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/users/$GITHUB_ACTOR)
+              git config --global user.email $(echo $user_info | jq -r '.name')
+              git config --global user.name $(echo $user_info | jq -r '.name')
+              git add PRERELEASE.md
+              git commit -m "dosc: update changelog for release"
+              git push origin changelog/${{ github.event.inputs.source-branch }}
+            
+          - name: Create Pull Request
+            uses: actions/github-script@v6
+            with:
+              script: |
+                const { data: pullRequest } = await github.pulls.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: 'docs: changelog for release',
+                  head: 'changelog/${{ github.event.inputs.source-branch }}',
+                  base: '${{ github.event.inputs.source-branch }}',
+                  body: 'Changelog update'
+                })
+                core.setOutput('pull-request-url', pullRequest.html_url)
