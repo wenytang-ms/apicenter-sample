@@ -51,6 +51,14 @@ jobs:
               cat PRERELEASE.md >> "$temp_file"
               mv "$temp_file" PRERELEASE.md
               echo "======== step 5 ==============" $(cat PRERELEASE.md)
+          
+          - name: Fetch user info
+            id: fetch_user_info
+            run: |
+                echo "Fetching user info for $GITHUB_ACTOR"
+                user_info=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/users/$GITHUB_ACTOR)
+                echo "user_name=$(echo $user_info | jq -r '.name')" >> $GITHUB_ENV
+                echo "user_email=$(echo $user_info | jq -r '.email')" >> $GITHUB_ENV
 
           - uses: peter-evans/create-pull-request@v4
             with:
@@ -60,3 +68,5 @@ jobs:
                 base: ${{ github.event.inputs.target-branch }}
                 add-paths: 'PRERELEASE.md'
                 commit-message: 'docs: update changelog for release'
+                author: '${{ env.user_name }}'
+                committer: '${{ env.user_email }}'
