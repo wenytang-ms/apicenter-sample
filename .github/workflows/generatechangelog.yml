@@ -41,7 +41,7 @@ jobs:
               echo -e '\nFx-core feat commits:\n' "$history_feat" '\n\n'> $temp_file
               echo "======== step 3 =============="
               history_fix=$(git log --pretty=format:"%s %h" $head...HEAD | grep "^fix")
-              echo "-------- step 3.5 --------------" $history_fix
+              echo -e "-------- step 3.5 --------------" $history_fix
               echo -e '\nFx-core fix commits:\n' "$history_fix" '\n\n'>> $temp_file
               echo "======== step 4 =============="
               cat PRERELEASE.md >> $temp_file
