@@ -15,8 +15,9 @@ on:
 jobs:
     generate-changelog:
         permissions:
-            actions: read
-            contents: read
+            contents: write
+            pull-requests: write
+            repository-projects: write
         runs-on: ubuntu-latest
         if: ${{ github.event_name == 'workflow_dispatch' }}
         steps:
