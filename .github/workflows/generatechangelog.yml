@@ -61,17 +61,9 @@ jobs:
               git add PRERELEASE.md
               git commit -m "dosc: update changelog for release"
               git push origin changelog/${{ github.event.inputs.target-branch }}
-            
-          - name: Create Pull Request
-            uses: actions/github-script@v6
+
+          - uses: peter-evans/create-pull-request@v4
             with:
-              script: |
-                const { data: pullRequest } = await github.pulls.create({
-                  owner: wenytang-ms,
-                  repo: apicenter-sample,
-                  title: 'docs: changelog for release',
-                  head: 'changelog/${{ github.event.inputs.target-branch }}',
-                  base: '${{ github.event.inputs.target-branch }}',
-                  body: 'Changelog update'
-                })
-                core.setOutput('pull-request-url', pullRequest.html_url)
+                token: ${{ secrets.GITHUB_TOKEN }}
+                branch: 'changelog/${{ github.event.inputs.target-branch }}'
+                title: 'docs: changelog for release'
