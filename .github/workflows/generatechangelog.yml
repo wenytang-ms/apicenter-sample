@@ -25,7 +25,6 @@ jobs:
               ref: ${{ github.event.inputs.target-branch }}
     
           - name: update changelog
-            working-directory: ./packages/vscode-extension/PRERELEASE.md
             run: |
               HEAD=git merge-base ${{ github.event.inputs.target-branch }} ${{ github.event.inputs.source-branch }}
               tempfile=$(mktemp)
@@ -38,7 +37,6 @@ jobs:
               git checkout -b changelog/${{ github.event.inputs.source-branch }}
           
           - name: setup user info
-            working-directory: ./packages/vscode-extension
             run: |
               user_info=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/users/$GITHUB_ACTOR)
               git config --global user.email $(echo $user_info | jq -r '.name')
