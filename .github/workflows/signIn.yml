@@ -1,8 +1,6 @@
 name: Run tests on staging
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   hello-world:
